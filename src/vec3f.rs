@@ -1,3 +1,4 @@
+
 use std::ops::{ Add, Sub, Mul, Div };
 use rand::Rng;
 
@@ -22,13 +23,21 @@ impl Vec3f {
 		}.unit()
 	}
 
-	pub fn dot(left: &Vec3f, right: &Vec3f) -> f32 {
-		left.x * right.x + left.y * right.y + left.z * right.z
+	pub fn dot(lhs: &Vec3f, rhs: &Vec3f) -> f32 {
+		lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z
 	}
 
-	pub fn reflect(v: &Vec3f, normal: &Vec3f) -> Vec3f {
-		let b = Vec3f::dot(v, normal);
-		*v - *normal * 2.0 * b
+	pub fn cross(lhs: &Vec3f, rhs: &Vec3f) -> Vec3f {
+		Vec3f {
+			x: lhs.y * rhs.z - lhs.z * rhs.y,
+			y: lhs.z * rhs.x - lhs.x * rhs.z,
+			z: lhs.x * rhs.y - lhs.y * rhs.x
+		}
+	}
+
+	pub fn reflect(v: Vec3f, normal: Vec3f) -> Vec3f {
+		let b = Vec3f::dot(&v, &normal);
+		v - normal * 2.0 * b
 	}
 
 	pub fn length(&self) -> f32 {
