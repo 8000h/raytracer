@@ -1,9 +1,7 @@
-use crate::aabb3d::Aabb3d;
-use crate::geometry::{HitResult, Hittable, Interval, Ray};
-use crate::material::Material;
-use crate::vec3f::Vec3f;
+use std::sync::Arc;
 
-use std::sync::{atomic, Arc};
+use crate::geometry::{Aabb3d, HitResult, Hittable, Interval, Ray, Vec3f};
+use crate::material::Material;
 
 use std::ops::{Add, Mul};
 

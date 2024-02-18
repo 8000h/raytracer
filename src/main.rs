@@ -1,26 +1,15 @@
-use geometry::Hittable;
+mod camera;
+mod geometry;
+mod material;
+
 use image::{ImageBuffer, Rgb, RgbImage};
 use std::io::Write;
 use std::sync::{Arc, Mutex};
 use std::thread::JoinHandle;
-use texture::CheckerTexture;
 
-mod aabb3d;
-mod camera;
-mod geometry;
-mod material;
-mod mesh;
-mod texture;
-mod triangle;
-mod vec3f;
-
-use crate::camera::Camera;
-use crate::geometry::{HittableGroup, Plane, Sphere};
-use crate::material::{Diffuse, Metal, DiffuseLight};
-use crate::mesh::load_mesh;
-use crate::texture::{ImageTexture, SolidColor, Texture};
-use crate::triangle::Triangle;
-use crate::vec3f::Vec3f;
+use camera::Camera;
+use geometry::{load_mesh, HittableGroup, Plane, Sphere, Vec3f};
+use material::{CheckerTexture, Diffuse, DiffuseLight, ImageTexture, Metal, SolidColor, Texture};
 
 const IMAGE_WIDTH: u32 = 768;
 const IMAGE_HEIGHT: u32 = 768;
@@ -29,7 +18,7 @@ const THREADS: usize = 64;
 const BACKGROUND: Vec3f = Vec3f {
 	x: 0.0,
 	y: 0.0,
-	z: 0.0
+	z: 0.0,
 };
 
 #[derive(Copy, Clone)]
@@ -54,7 +43,7 @@ impl ImageFragment {
 fn update_progress(completed: u32) {
 	let percent = f32::round(completed as f32 / IMAGE_HEIGHT as f32 * 100.0);
 	print!("\r{}% complete...", percent);
-	std::io::stdout().flush();
+	std::io::stdout().flush().unwrap();
 }
 
 fn render(
@@ -91,20 +80,12 @@ fn render(
 			*counter += 1;
 			update_progress(*counter);
 		}
-
 	}
 
 	fragment
 }
 
-/*
-static white_diffuse: Diffuse = Diffuse::new(Vec3f::new(0.90, 0.90, 0.90));
-static diffuse: Diffuse = Diffuse::new(Vec3f::new(0.98 / 2.0, 0.70 / 2.0, 0.651 / 2.0));
-static purple_diffuse: Diffuse = Diffuse::new(Vec3f::new(0.54, 0.44, 0.60));
-static metal: Metal = Metal::new(Vec3f::new(0.8, 0.8, 0.8));
-static gold: Metal = Metal::new(Vec3f::new(255.0 / 255.0, 215.0 / 255.0, 0.0));
-*/
-
+#[allow(dead_code, unused_variables)]
 fn scene_cube(scene: &mut HittableGroup) -> Arc<Camera> {
 	let camera = Arc::new(Camera::new(
 		BACKGROUND,
@@ -136,7 +117,7 @@ fn scene_cube(scene: &mut HittableGroup) -> Arc<Camera> {
 	let white_texture = Arc::new(SolidColor::new(Vec3f::new(10.0, 10.0, 10.0)));
 	let white_light = Arc::new(DiffuseLight::new(white_texture));
 
-	let ant = mesh::load_mesh("models/cube.obj", ant_metal);
+	let ant = load_mesh("models/cube.obj", ant_metal);
 
 	scene.add(Box::new(ant));
 
@@ -158,6 +139,7 @@ fn scene_cube(scene: &mut HittableGroup) -> Arc<Camera> {
 	camera
 }
 
+#[allow(dead_code, unused_variables)]
 fn scene_tank(scene: &mut HittableGroup) -> Arc<Camera> {
 	let camera = Arc::new(Camera::new(
 		BACKGROUND,
@@ -189,7 +171,7 @@ fn scene_tank(scene: &mut HittableGroup) -> Arc<Camera> {
 	let white_texture = Arc::new(SolidColor::new(Vec3f::new(10.0, 10.0, 10.0)));
 	let white_light = Arc::new(DiffuseLight::new(white_texture));
 
-	let ant = mesh::load_mesh("models/IS.obj", ant_diffuse);
+	let ant = load_mesh("models/IS.obj", ant_diffuse);
 
 	scene.add(Box::new(ant));
 
@@ -209,6 +191,7 @@ fn scene_tank(scene: &mut HittableGroup) -> Arc<Camera> {
 	camera
 }
 
+#[allow(dead_code, unused_variables)]
 fn scene_ant(scene: &mut HittableGroup) -> Arc<Camera> {
 	let camera = Arc::new(Camera::new(
 		BACKGROUND,
@@ -240,7 +223,7 @@ fn scene_ant(scene: &mut HittableGroup) -> Arc<Camera> {
 	let white_texture = Arc::new(SolidColor::new(Vec3f::new(10.0, 10.0, 10.0)));
 	let white_light = Arc::new(DiffuseLight::new(white_texture));
 
-	let ant = mesh::load_mesh("models/ant.obj", purple_diffuse);
+	let ant = load_mesh("models/ant.obj", purple_diffuse);
 
 	scene.add(Box::new(ant));
 
@@ -260,6 +243,7 @@ fn scene_ant(scene: &mut HittableGroup) -> Arc<Camera> {
 	camera
 }
 
+#[allow(dead_code, unused_variables)]
 fn scene_spheres(scene: &mut HittableGroup) -> Arc<Camera> {
 	let camera = Arc::new(Camera::new(
 		BACKGROUND,
@@ -297,13 +281,13 @@ fn scene_spheres(scene: &mut HittableGroup) -> Arc<Camera> {
 	scene.add(Box::new(Sphere::new(
 		Vec3f::new(-0.4, 0.35, -1.0),
 		0.2,
-		gray_metal
+		gray_metal,
 	)));
 
 	scene.add(Box::new(Sphere::new(
 		Vec3f::new(0.25, 0.15, -1.0),
 		0.2,
-		white_light
+		white_light,
 	)));
 
 	camera

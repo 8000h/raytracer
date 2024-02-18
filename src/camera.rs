@@ -1,10 +1,6 @@
-use crate::geometry::{Hittable, HittableGroup, Interval, Ray};
-use crate::vec3f::Vec3f;
-
 use rand::Rng;
 
-const VIEWPORT_WIDTH: f64 = 1.0;
-const VIEWPORT_HEIGHT: f64 = 1.0;
+use crate::geometry::{Hittable, HittableGroup, Interval, Ray, Vec3f};
 
 pub struct Camera {
 	pub background: Vec3f,
@@ -77,6 +73,7 @@ impl Camera {
 		}
 	}
 
+	#[allow(unreachable_code)]
 	pub fn raycast(&self, ray: &Ray, world: &HittableGroup, depth: u32) -> Vec3f {
 		if depth == 0 {
 			//return Vec3f::new(2.0, 2.0, 2.0);
@@ -96,7 +93,7 @@ impl Camera {
 
 		return self.background;
 
-		let BLUE: Vec3f = Vec3f {
+		let blue: Vec3f = Vec3f {
 			x: 0.5,
 			y: 0.7,
 			z: 1.0,
@@ -104,6 +101,6 @@ impl Camera {
 
 		let a = 0.5 * (ray.direction.y + 1.0);
 
-		BLUE * a + (1.0 - a)
+		blue * a + (1.0 - a)
 	}
 }

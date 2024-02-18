@@ -1,5 +1,4 @@
-use crate::geometry::{Interval, Ray};
-use crate::vec3f::Vec3f;
+use crate::geometry::{Interval, Ray, Vec3f};
 
 use std::mem::swap;
 

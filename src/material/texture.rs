@@ -1,6 +1,6 @@
-use crate::vec3f::Vec3f;
+use image::{DynamicImage, GenericImageView, Pixel};
 
-use image::{DynamicImage, GenericImageView, Pixel, RgbImage};
+use crate::geometry::Vec3f;
 
 pub trait Texture: Send + Sync {
 	fn value(&self, u: f64, v: f64, point: &Vec3f) -> Vec3f;
@@ -17,7 +17,7 @@ impl SolidColor {
 }
 
 impl Texture for SolidColor {
-	fn value(&self, u: f64, v: f64, point: &Vec3f) -> Vec3f {
+	fn value(&self, _: f64, _: f64, _: &Vec3f) -> Vec3f {
 		self.value
 	}
 }
@@ -39,7 +39,7 @@ impl CheckerTexture {
 }
 
 impl Texture for CheckerTexture {
-	fn value(&self, u: f64, v: f64, point: &Vec3f) -> Vec3f {
+	fn value(&self, u: f64, v: f64, _: &Vec3f) -> Vec3f {
 		let ix = f64::round(u * self.scale) as i32;
 		let iy = f64::round(v * self.scale) as i32;
 
@@ -59,7 +59,7 @@ pub struct ImageTexture {
 
 impl ImageTexture {
 	pub fn new(path: &str) -> ImageTexture {
-		let mut data = image::open(path).unwrap();
+		let data = image::open(path).unwrap();
 		let width = data.width();
 		let height = data.height();
 
@@ -72,14 +72,17 @@ impl ImageTexture {
 }
 
 impl Texture for ImageTexture {
-	fn value(&self, u: f64, v: f64, point: &Vec3f) -> Vec3f {
+	fn value(&self, u: f64, v: f64, _: &Vec3f) -> Vec3f {
 		let mut px = f64::round(u * (self.width as f64 - 1.0)) as i32;
 		let mut py = f64::round(v * (self.height as f64 - 1.0)) as i32;
 
 		px = px.rem_euclid(self.width as i32);
 		py = py.rem_euclid(self.height as i32);
 
-		let pixel = self.data.get_pixel(px as u32, self.height - 1 - py as u32).to_rgb();
+		let pixel = self
+			.data
+			.get_pixel(px as u32, self.height - 1 - py as u32)
+			.to_rgb();
 
 		Vec3f::new(
 			pixel[0] as f64 / 255.0,

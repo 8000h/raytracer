@@ -1,14 +1,8 @@
+use rand::Rng;
 use std::sync::Arc;
 
-use tobj::*;
-
-use rand::Rng;
-
-use crate::aabb3d::Aabb3d;
-use crate::geometry::{HitResult, Hittable, HittableGroup, Interval, Ray};
+use crate::geometry::{Aabb3d, HitResult, Hittable, Interval, Ray, Triangle, Uv, Vec3f};
 use crate::material::Material;
-use crate::triangle::{Triangle, Uv};
-use crate::vec3f::Vec3f;
 
 pub struct Bvh {
 	bounds: Aabb3d,
@@ -102,9 +96,9 @@ pub fn load_mesh(path: &str, material: Arc<dyn Material>) -> Bvh {
 	options.triangulate = true;
 	options.single_index = false;
 
-	let (models, materials) = tobj::load_obj(&path, &options).unwrap();
+	let (models, _) = tobj::load_obj(&path, &options).unwrap();
 
-	for (i, m) in models.iter().enumerate() {
+	for (_, m) in models.iter().enumerate() {
 		let cmesh = &m.mesh;
 		let face_count = cmesh.indices.len() / 3;
 
@@ -125,15 +119,10 @@ pub fn load_mesh(path: &str, material: Arc<dyn Material>) -> Bvh {
 			let t1 = &cmesh.texcoords[ti1..ti1 + 2];
 			let t2 = &cmesh.texcoords[ti2..ti2 + 2];
 
-			let temp = Uv::new(0.0, 0.0);
-
 			let tri = Triangle::new(
 				Vec3f::new(v0[0] as f64 + 3.5, v0[1] as f64, v0[2] as f64 - 1.5),
 				Vec3f::new(v1[0] as f64 + 3.5, v1[1] as f64, v1[2] as f64 - 1.5),
 				Vec3f::new(v2[0] as f64 + 3.5, v2[1] as f64, v2[2] as f64 - 1.5),
-				//temp,
-				//temp,
-				//temp,
 				Uv::new(t0[0] as f64, t0[1] as f64),
 				Uv::new(t1[0] as f64, t1[1] as f64),
 				Uv::new(t2[0] as f64, t2[1] as f64),
